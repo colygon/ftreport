@@ -1,0 +1,2077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frontier Tower — Work Report</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface2: #1a1a26;
+      --border: #2a2a3a;
+      --text: #e0e0e8;
+      --text-muted: #8888a0;
+      --accent: #00d4ff;
+      --accent2: #7b61ff;
+      --accent3: #ff4d6a;
+      --accent4: #00e68a;
+      --gradient1: linear-gradient(135deg, #00d4ff 0%, #7b61ff 100%);
+      --gradient2: linear-gradient(135deg, #ff4d6a 0%, #ff8a3d 100%);
+      --gradient3: linear-gradient(135deg, #00e68a 0%, #00d4ff 100%);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Animated background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 100px 0 80px;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 800;
+      background: var(--gradient1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Navigation */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0;
+    }
+
+    nav .container {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    nav .container::-webkit-scrollbar { display: none; }
+
+    nav a {
+      padding: 16px 20px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    nav a:hover, nav a.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* Sections */
+    section {
+      padding: 80px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 700px;
+      margin-bottom: 48px;
+    }
+
+    /* Stat cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .stat-card.cyan::before { background: var(--gradient1); }
+    .stat-card.pink::before { background: var(--gradient2); }
+    .stat-card.green::before { background: var(--gradient3); }
+    .stat-card.purple::before { background: linear-gradient(135deg, #7b61ff 0%, #b44dff 100%); }
+
+    .stat-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .stat-card.cyan .stat-number { color: var(--accent); }
+    .stat-card.pink .stat-number { color: var(--accent3); }
+    .stat-card.green .stat-number { color: var(--accent4); }
+    .stat-card.purple .stat-number { color: var(--accent2); }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* Feature cards */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(0,212,255,0.3);
+      transform: translateY(-2px);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+
+    .feature-icon.cyan { background: rgba(0,212,255,0.1); }
+    .feature-icon.pink { background: rgba(255,77,106,0.1); }
+    .feature-icon.green { background: rgba(0,230,138,0.1); }
+    .feature-icon.purple { background: rgba(123,97,255,0.1); }
+    .feature-icon.orange { background: rgba(255,138,61,0.1); }
+
+    .feature-card h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Tables */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 14px 20px;
+      background: var(--surface2);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tr:hover td { background: rgba(0,212,255,0.02); }
+
+    tr.av-hidden {
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .av-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+    .av-label.av-support { color: var(--accent); }
+    .av-label.planning-support { color: var(--accent2); }
+
+    .av-trash {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 15px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .av-trash:hover {
+      color: var(--accent3);
+      background: rgba(255,77,106,0.1);
+    }
+
+    .rank {
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .number {
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .number.cyan { color: var(--accent); }
+    .number.pink { color: var(--accent3); }
+    .number.green { color: var(--accent4); }
+
+    /* Tags */
+    .tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .tag.cyan { background: rgba(0,212,255,0.1); color: var(--accent); }
+    .tag.pink { background: rgba(255,77,106,0.1); color: var(--accent3); }
+    .tag.green { background: rgba(0,230,138,0.1); color: var(--accent4); }
+    .tag.purple { background: rgba(123,97,255,0.1); color: var(--accent2); }
+    .tag.orange { background: rgba(255,138,61,0.1); color: #ff8a3d; }
+
+    /* Horizontal bar chart */
+    .bar-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .bar-label {
+      width: 140px;
+      font-size: 13px;
+      text-align: right;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 28px;
+      background: var(--surface2);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      padding-left: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      min-width: 50px;
+      transition: width 1s ease;
+    }
+
+    .bar-fill.cyan { background: linear-gradient(90deg, rgba(0,212,255,0.7), rgba(0,212,255,0.3)); }
+    .bar-fill.pink { background: linear-gradient(90deg, rgba(255,77,106,0.7), rgba(255,77,106,0.3)); }
+    .bar-fill.green { background: linear-gradient(90deg, rgba(0,230,138,0.7), rgba(0,230,138,0.3)); }
+    .bar-fill.purple { background: linear-gradient(90deg, rgba(123,97,255,0.7), rgba(123,97,255,0.3)); }
+    .bar-fill.orange { background: linear-gradient(90deg, rgba(255,138,61,0.7), rgba(255,138,61,0.3)); }
+
+    /* Suppression cards */
+    .suppression-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .suppression-card {
+      background: rgba(255,77,106,0.05);
+      border: 1px solid rgba(255,77,106,0.15);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .suppression-card .stat-number {
+      font-size: 1.6rem;
+      color: var(--accent3);
+    }
+
+    .suppression-card .stat-label {
+      font-size: 12px;
+    }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding-left: 32px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 32px;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -36px;
+      top: 6px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px rgba(0,212,255,0.4);
+    }
+
+    .timeline-date {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .timeline-item h4 {
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .timeline-item p {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* Subsections */
+    .subsection {
+      margin-bottom: 48px;
+    }
+
+    .subsection h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .subsection > p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    /* Admin tabs list */
+    .admin-tabs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .admin-tab {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      transition: border-color 0.2s;
+    }
+
+    .admin-tab:hover { border-color: rgba(0,212,255,0.3); }
+
+    .admin-tab h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .admin-tab p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Footer */
+    footer {
+      padding: 48px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* Two-column layout */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    /* Pill list */
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 13px;
+    }
+
+    .pill .count {
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .two-col { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      section { padding: 48px 0; }
+      .hero { padding: 60px 0 48px; }
+      nav a { padding: 12px 14px; font-size: 13px; }
+      .bar-label { width: 100px; font-size: 12px; }
+    }
+
+    /* Animate on scroll */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Photo gallery */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .photo-card {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: border-color 0.3s, transform 0.3s;
+      cursor: pointer;
+    }
+
+    .photo-card:hover {
+      border-color: rgba(0,212,255,0.3);
+      transform: translateY(-2px);
+    }
+
+    .photo-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-card .photo-label {
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .lightbox.active { display: flex; }
+
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 8px;
+      object-fit: contain;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 20px; right: 24px;
+      color: #fff;
+      font-size: 32px;
+      cursor: pointer;
+      line-height: 1;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .lightbox-close:hover { opacity: 1; }
+
+    /* Video grid */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+      gap: 20px;
+    }
+
+    .video-card {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .video-card .video-wrap {
+      width: 100%;
+      height: 0;
+      position: relative;
+      padding-bottom: 56.25%;
+    }
+
+    .video-card .video-wrap iframe {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      left: 0;
+      top: 0;
+      border: 0;
+    }
+
+    @media (max-width: 768px) {
+      .video-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="container">
+    <div class="hero-badge">Work Report March 2026</div>
+    <h1>Frontier Tower</h1>
+    <p>A comprehensive overview of the infrastructure, tools, and systems built for Frontier Tower and Funding the Commons.</p>
+  </div>
+</header>
+
+<!-- Navigation -->
+<nav>
+  <div class="container">
+    <a href="#overview" class="active">Overview</a>
+    <a href="#events">Marketing</a>
+    <a href="#av">Events+A/V</a>
+    <a href="#recordings">Recordings</a>
+    <a href="#email-analytics">Beehiiv Emails</a>
+    <a href="#mailing-lists">Brevo Email Lists</a>
+    <a href="#email-invites">SendGrid Emails</a>
+    <a href="#furniture">Furniture</a>
+    <a href="#wifi-portal">WiFi Portal</a>
+  </div>
+</nav>
+
+<!-- Overview Section -->
+<section id="overview">
+  <div class="container">
+    <div class="section-label">At a Glance</div>
+    <h2 class="section-title">What Colin Did</h2>
+    <p class="section-desc">End-to-end event operations infrastructure — from email marketing and mailing list segmentation to A/V production, furniture sourcing, livestream recordings, and WiFi captive portal management.</p>
+
+    <div class="stats-grid fade-in">
+      <div class="stat-card cyan">
+        <div class="stat-number">189,056</div>
+        <div class="stat-label">Total Leads</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-number">883</div>
+        <div class="stat-label">Events Tracked</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-number">46</div>
+        <div class="stat-label">Audience Segments</div>
+      </div>
+      <div class="stat-card cyan">
+        <div class="stat-number">180,457</div>
+        <div class="stat-label">Clean Brevo Contacts</div>
+      </div>
+      <div class="stat-card pink">
+        <div class="stat-number">50,425</div>
+        <div class="stat-label">Unique Domains</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-number">35</div>
+        <div class="stat-label">Events A/V + Planning</div>
+      </div>
+    </div>
+
+    <div class="subsection fade-in">
+      <h3>Beehiiv Email Performance</h3>
+      <div class="stats-grid">
+        <div class="stat-card cyan">
+          <div class="stat-number">3.6M</div>
+          <div class="stat-label">Delivered</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-number">1.4M</div>
+          <div class="stat-label">Opened</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-number">26,763</div>
+          <div class="stat-label">Unique Clicks</div>
+        </div>
+        <div class="stat-card pink">
+          <div class="stat-number">23,626</div>
+          <div class="stat-label">Verified Unique Clicks</div>
+        </div>
+        <div class="stat-card cyan">
+          <div class="stat-number">105,281</div>
+          <div class="stat-label">Unique Subscribers</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-number">58</div>
+          <div class="stat-label">Campaigns Sent</div>
+        </div>
+      </div>
+      <h3 style="margin-top:24px">Engagement Rates</h3>
+      <div class="stats-grid" style="grid-template-columns:repeat(5,1fr)">
+        <div class="stat-card cyan">
+          <div class="stat-number" style="font-size:1.8rem">38.65%</div>
+          <div class="stat-label">Open Rate</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-number" style="font-size:1.8rem">1.93%</div>
+          <div class="stat-label">Click-Through Rate</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-number" style="font-size:1.8rem">1.7%</div>
+          <div class="stat-label">Verified CTR</div>
+        </div>
+        <div class="stat-card pink">
+          <div class="stat-number" style="font-size:1.8rem">0.34%</div>
+          <div class="stat-label">Unsubscribe Rate</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-number" style="font-size:1.8rem">0.004%</div>
+          <div class="stat-label">Spam Report Rate</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection fade-in">
+      <h3>SendGrid Emails</h3>
+      <div class="stats-grid">
+        <div class="stat-card cyan">
+          <div class="stat-number">196,102</div>
+          <div class="stat-label">Requests</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-number">181,471</div>
+          <div class="stat-label">Delivered (92.54%)</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-number">18,176</div>
+          <div class="stat-label">Opened (9.27%)</div>
+        </div>
+        <div class="stat-card cyan">
+          <div class="stat-number">6</div>
+          <div class="stat-label">Clicked (0.00%)</div>
+        </div>
+        <div class="stat-card pink">
+          <div class="stat-number">6,380</div>
+          <div class="stat-label">Bounces (3.25%)</div>
+        </div>
+        <div class="stat-card pink">
+          <div class="stat-number">13</div>
+          <div class="stat-label">Spam Reports (0.01%)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection fade-in">
+      <h3>Brevo Mailing Lists</h3>
+      <div class="stats-grid">
+        <div class="stat-card purple">
+          <div class="stat-number">46</div>
+          <div class="stat-label">Interest Segments</div>
+        </div>
+        <div class="stat-card cyan">
+          <div class="stat-number">180,457</div>
+          <div class="stat-label">Clean Contacts for Import</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="features-grid fade-in">
+      <div class="feature-card">
+        <div class="feature-icon pink">&#9993;</div>
+        <h3>Marketing &amp; Promotion</h3>
+        <p>Promoted 30+ top events. Managed event listings, tracked 883 events, and drove attendance through targeted campaigns.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon green">&#128202;</div>
+        <h3>Events A/V</h3>
+        <p>A/V setup, livestreaming, and production support for 35 events. Planning support across all assisted events.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon cyan">&#127909;</div>
+        <h3>Recordings &amp; Livestreams</h3>
+        <p>10 event recordings and livestreams produced via StreamYard for Frontier Tower events.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon purple">&#9993;</div>
+        <h3>Beehiiv Emails</h3>
+        <p>3.6M delivered across 58 campaigns to 105,281 subscribers. 38.65% open rate, 1.93% CTR.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon purple">&#128209;</div>
+        <h3>Brevo Email Lists</h3>
+        <p>46 interest-based segments built from keyword matching. 180,457 clean contacts exported to Brevo for Funding the Commons.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon pink">&#128232;</div>
+        <h3>SendGrid Emails</h3>
+        <p>196,102 requests sent, 181,471 delivered (92.54%), 18,176 opened. Segment-targeted invites with 2 templates.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon orange">&#128187;</div>
+        <h3>Furniture &amp; Equipment</h3>
+        <p>21 items sourced: sofas, desks, displays, appliances, and equipment for common areas and event spaces.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon cyan">&#9881;</div>
+        <h3>WiFi Captive Portal</h3>
+        <p>4,147 lifetime registrations. Guest portal with member/event flows, multi-language support, dark mode, virtual tours, and career board.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Events Section -->
+<section id="events">
+  <div class="container">
+    <div class="section-label">Events</div>
+    <h2 class="section-title">Marketing &amp; Event Promotion by Colin</h2>
+    <p class="section-desc">883 events tracked in total. Here are the largest by approved attendees and the most recent events in the last 6 weeks.</p>
+
+    <div class="two-col fade-in">
+      <div class="subsection">
+        <h3>Top 30 Events by Approved Attendees</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Event</th>
+                <th style="min-width:90px">Date</th>
+                <th style="text-align:right">Approved</th>
+                <th style="text-align:center">Promoted</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="rank">1</td><td>SensAI Hack San Francisco</td><td><span class="tag cyan">Dec 6</span></td><td style="text-align:right" class="number green">1,798</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">2</td><td>Ethereum is Coming Home</td><td><span class="tag cyan">Jul 1</span></td><td style="text-align:right" class="number green">1,444</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">3</td><td>Hackathon | Funding the Commons SF</td><td><span class="tag cyan">Mar 14</span></td><td style="text-align:right" class="number green">1,359</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">4</td><td>AI+ Renaissance Conference 2026</td><td><span class="tag cyan">Mar 15</span></td><td style="text-align:right" class="number green">1,133</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">5</td><td>AGI, Inc. x OpenAI x Lovable REAL Agent Challenge</td><td><span class="tag cyan">Nov 22</span></td><td style="text-align:right" class="number green">1,116</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">6</td><td>Alien.org vs OpenClaw Hackathon by ESI</td><td><span class="tag cyan">Feb 8</span></td><td style="text-align:right" class="number green">1,067</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">7</td><td>Robot Fights UFB Livestream</td><td><span class="tag cyan">Aug 9</span></td><td style="text-align:right" class="number green">974</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">8</td><td>AI Agents &amp; MCP Hardware Hackathon</td><td><span class="tag cyan">Jan 10</span></td><td style="text-align:right" class="number green">947</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">9</td><td>MCP Demo Day</td><td><span class="tag cyan">Sep 24</span></td><td style="text-align:right" class="number green">920</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">10</td><td>Ethereum 10Y Anniversary SF</td><td><span class="tag cyan">Jul 30</span></td><td style="text-align:right" class="number green">896</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">11</td><td>Institutional Day @ Ethereum House</td><td><span class="tag cyan">Sep 20</span></td><td style="text-align:right" class="number green">875</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">12</td><td>ComfyUI Crash Course - Inpainting/Outpainting</td><td><span class="tag cyan">Mar 5</span></td><td style="text-align:right" class="number green">724</td><td></td></tr>
+              <tr><td class="rank">13</td><td>Reactive to Predictive Neurology: Neuro Fireside</td><td><span class="tag cyan">Feb 27</span></td><td style="text-align:right" class="number green">690</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">14</td><td>Views &amp; Grooves Afterwork: Weston Grey</td><td><span class="tag cyan">Nov 22</span></td><td style="text-align:right" class="number green">684</td><td></td></tr>
+              <tr><td class="rank">15</td><td>5th Annual Midwinter Magic: World Folk Jam</td><td><span class="tag cyan">Dec 22</span></td><td style="text-align:right" class="number green">675</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">16</td><td>Build on Aeternity Hackathon</td><td><span class="tag cyan">Oct 4</span></td><td style="text-align:right" class="number green">673</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">17</td><td>Vibe Coding Unity &amp; WebXR with Gemini</td><td><span class="tag cyan">Dec 6</span></td><td style="text-align:right" class="number green">632</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">18</td><td>World Folk Jam</td><td><span class="tag cyan">Nov 8</span></td><td style="text-align:right" class="number green">595</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">19</td><td>Movement</td><td><span class="tag cyan">Mar 8</span></td><td style="text-align:right" class="number green">574</td><td></td></tr>
+              <tr><td class="rank">20</td><td>6th Annual Heartform: Festival of the Heart</td><td><span class="tag cyan">Feb 14</span></td><td style="text-align:right" class="number green">568</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">21</td><td>CyberPunk Poker Night @ PROTO7YPE</td><td><span class="tag cyan">Dec 29</span></td><td style="text-align:right" class="number green">546</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">22</td><td>Samurai Strike Team - Midwinter Magic Volunteers</td><td><span class="tag cyan">Dec 22</span></td><td style="text-align:right" class="number green">529</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">23</td><td>Nerdos Meetup: AI, Nerds, Pizza, Pitches</td><td><span class="tag cyan">Jul 10</span></td><td style="text-align:right" class="number green">527</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">24</td><td>How we can reach Longevity Escape Velocity by 2040</td><td><span class="tag cyan">Mar 10</span></td><td style="text-align:right" class="number green">490</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">25</td><td>Open House</td><td><span class="tag cyan">Jul 8</span></td><td style="text-align:right" class="number green">489</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">26</td><td>SSEDA &amp; Friends - Views &amp; Grooves Afterwork</td><td><span class="tag cyan">Nov 8</span></td><td style="text-align:right" class="number green">482</td><td></td></tr>
+              <tr><td class="rank">27</td><td>MCP Night - Enterprise AI and MCP</td><td><span class="tag cyan">Nov 6</span></td><td style="text-align:right" class="number green">482</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">28</td><td>Bad Ideas Pitch Competition — Playful Sincerity</td><td><span class="tag cyan">Feb 14</span></td><td style="text-align:right" class="number green">473</td><td></td></tr>
+              <tr><td class="rank">29</td><td>MultiDance — Members Free</td><td><span class="tag cyan">Nov 1</span></td><td style="text-align:right" class="number green">465</td><td></td></tr>
+              <tr><td class="rank">30</td><td>MultiDance — Members Free</td><td><span class="tag cyan">Nov 13</span></td><td style="text-align:right" class="number green">464</td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="subsection">
+        <h3>Last 6 Weeks</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Event</th>
+                <th style="min-width:90px">Date</th>
+                <th style="text-align:right">Approved</th>
+                <th style="text-align:center">Promoted</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="rank">1</td><td>Hackathon | Funding the Commons SF</td><td><span class="tag cyan">Mar 14</span></td><td style="text-align:right" class="number green">1,359</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">2</td><td>AI+ Renaissance Conference 2026</td><td><span class="tag cyan">Mar 15</span></td><td style="text-align:right" class="number green">1,133</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">3</td><td>Alien.org vs OpenClaw Hackathon</td><td><span class="tag cyan">Feb 8</span></td><td style="text-align:right" class="number green">1,067</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">4</td><td>ComfyUI Crash Course</td><td><span class="tag cyan">Mar 5</span></td><td style="text-align:right" class="number green">724</td><td></td></tr>
+              <tr><td class="rank">5</td><td>Reactive to Predictive Neurology</td><td><span class="tag cyan">Feb 27</span></td><td style="text-align:right" class="number green">690</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">6</td><td>Movement</td><td><span class="tag cyan">Mar 8</span></td><td style="text-align:right" class="number green">574</td><td></td></tr>
+              <tr><td class="rank">7</td><td>6th Annual Heartform</td><td><span class="tag cyan">Feb 14</span></td><td style="text-align:right" class="number green">568</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">8</td><td>Longevity Escape Velocity by 2040</td><td><span class="tag cyan">Mar 10</span></td><td style="text-align:right" class="number green">490</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">9</td><td>Bad Ideas Pitch Competition</td><td><span class="tag cyan">Feb 14</span></td><td style="text-align:right" class="number green">473</td><td></td></tr>
+              <tr><td class="rank">10</td><td>Burning Man Q&amp;A + Potluck</td><td><span class="tag cyan">Feb 23</span></td><td style="text-align:right" class="number green">449</td><td></td></tr>
+              <tr><td class="rank">11</td><td>Conversation Cafe — Playful Sincerity</td><td><span class="tag cyan">Feb 17</span></td><td style="text-align:right" class="number green">444</td><td></td></tr>
+              <tr><td class="rank">12</td><td>Conversation Cafe — Playful Sincerity</td><td><span class="tag cyan">Mar 3</span></td><td style="text-align:right" class="number green">442</td><td></td></tr>
+              <tr><td class="rank">13</td><td>Conversation Cafe — Playful Sincerity</td><td><span class="tag cyan">Feb 24</span></td><td style="text-align:right" class="number green">440</td><td></td></tr>
+              <tr><td class="rank">14</td><td>Ethereum Unblock: AI-driven Design Sprint</td><td><span class="tag cyan">Mar 10</span></td><td style="text-align:right" class="number green">436</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">15</td><td>Open-Door Co-Working &amp; Lunch</td><td><span class="tag cyan">Feb 6</span></td><td style="text-align:right" class="number green">435</td><td></td></tr>
+              <tr><td class="rank">16</td><td>Conversation Cafe — Playful Sincerity</td><td><span class="tag cyan">Feb 3</span></td><td style="text-align:right" class="number green">432</td><td></td></tr>
+              <tr><td class="rank">17</td><td>FRONTIERED: TWO</td><td><span class="tag cyan">Mar 6</span></td><td style="text-align:right" class="number green">431</td><td></td></tr>
+              <tr><td class="rank">18</td><td>Musa Labs Hackathon SF</td><td><span class="tag cyan">Feb 27</span></td><td style="text-align:right" class="number green">388</td><td></td></tr>
+              <tr><td class="rank">19</td><td>Open Metaverse Hackathon</td><td><span class="tag cyan">Mar 7</span></td><td style="text-align:right" class="number green">382</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">20</td><td>Agents That Trade</td><td><span class="tag cyan">Mar 12</span></td><td style="text-align:right" class="number green">357</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">21</td><td>Mind Skills 001: Energy &amp; Motivation</td><td><span class="tag cyan">Feb 26</span></td><td style="text-align:right" class="number green">342</td><td></td></tr>
+              <tr><td class="rank">22</td><td>Physical AI Gym X Open Claw Workshop</td><td><span class="tag cyan">Mar 7</span></td><td style="text-align:right" class="number green">316</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">23</td><td>An Unglamorous AMA Guide to Growing an Org</td><td><span class="tag cyan">Mar 4</span></td><td style="text-align:right" class="number green">313</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">24</td><td>Physical AI Meetup - Robots at Home</td><td><span class="tag cyan">Feb 26</span></td><td style="text-align:right" class="number green">309</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">25</td><td>Funding the Commons SF (main event)</td><td><span class="tag cyan">Mar 14</span></td><td style="text-align:right" class="number green">277</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">26</td><td>Learn to Levitate – Posture &amp; Presence</td><td><span class="tag cyan">Mar 12</span></td><td style="text-align:right" class="number green">245</td><td></td></tr>
+              <tr><td class="rank">27</td><td>Engineered Flow: How Top Tech Leaders Enter Flow</td><td><span class="tag cyan">Mar 5</span></td><td style="text-align:right" class="number green">243</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">28</td><td>OpenClaw @ HealthTech Connect</td><td><span class="tag cyan">Feb 16</span></td><td style="text-align:right" class="number green">238</td><td style="text-align:center;color:var(--accent4)">&#10003;</td></tr>
+              <tr><td class="rank">29</td><td>The Velocity Edge: Navigating New Frontier of VC</td><td><span class="tag cyan">Mar 4</span></td><td style="text-align:right" class="number green">216</td><td></td></tr>
+              <tr><td class="rank">30</td><td>Vibe Coding Night #15 — Claude Agents SDK</td><td><span class="tag cyan">Mar 2</span></td><td style="text-align:right" class="number green">209</td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</section>
+
+<!-- Events A/V Section -->
+<section id="av">
+  <div class="container">
+    <div class="section-label">Production</div>
+    <h2 class="section-title">Events A/V by Colin</h2>
+    <p class="section-desc">Audio/visual setup, livestreaming, and production support for Frontier Tower events. Check the events where A/V was handled.</p>
+
+    <div class="subsection">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:center;width:50px">A/V</th>
+              <th style="text-align:center;width:65px">Assisted</th>
+              <th>#</th>
+              <th>Event</th>
+              <th style="min-width:90px">Date</th>
+              <th style="text-align:right">Approved</th>
+              <th style="width:40px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="text-align:center"><input type="checkbox" id="av1" checked><span class="av-label av-support">A/V Support</span></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">6</td><td>1Hr Jobs Fair @ The Tower!</td><td><span class="tag cyan">Feb 3</span></td><td style="text-align:right" class="number green">102</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av2" checked><span class="av-label av-support">A/V Support</span></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">7</td><td>Town Hall 2.0 - First of 2026</td><td><span class="tag cyan">Feb 3</span></td><td style="text-align:right" class="number green">41</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av3"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">12</td><td>ACCELR8 | Code &amp; Coffee</td><td><span class="tag cyan">Feb 4</span></td><td style="text-align:right" class="number green">2</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av4"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">18</td><td>ClawdBot / OpenClaw Getting Started by Ray + Prakshal</td><td><span class="tag cyan">Feb 6</span></td><td style="text-align:right" class="number green">123</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av5" checked><span class="av-label av-support">A/V Support</span></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">20</td><td>OpenClaw SF Builder Meetup: The Shielded Claw</td><td><span class="tag cyan">Feb 6</span></td><td style="text-align:right" class="number green">39</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av6"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">24</td><td>3D Modelling with Blender Intensive - Workshop 2</td><td><span class="tag cyan">Feb 7</span></td><td style="text-align:right" class="number green">62</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av7" checked><span class="av-label av-support">A/V Support</span></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">30</td><td>Alien.org vs OpenClaw Hackathon by ESI</td><td><span class="tag cyan">Feb 8</span></td><td style="text-align:right" class="number green">1,067</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av8" checked><span class="av-label av-support">A/V Support</span></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">39</td><td>Tech Skills 001: OpenClaw Tutorial (Playful Sincerity Events)</td><td><span class="tag cyan">Feb 12</span></td><td style="text-align:right" class="number green">169</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av9"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">58</td><td>6th Annual Heartform: A Festival of the Heart</td><td><span class="tag cyan">Feb 14</span></td><td style="text-align:right" class="number green">568</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av10"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">60</td><td>Tech Original Games</td><td><span class="tag cyan">Feb 15</span></td><td style="text-align:right" class="number green">145</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av11"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">61</td><td>SF OpenClaw Hackathon</td><td><span class="tag cyan">Feb 15</span></td><td style="text-align:right" class="number green">133</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av12"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">66</td><td>OpenClaw @ HealthTech Connect by Max Health</td><td><span class="tag cyan">Feb 16</span></td><td style="text-align:right" class="number green">238</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av13"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">73</td><td>Frontier Tower Droid Builders Club</td><td><span class="tag cyan">Feb 18</span></td><td style="text-align:right" class="number green">24</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av14"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">95</td><td>AGI Coworking</td><td><span class="tag cyan">Feb 23</span></td><td style="text-align:right" class="number green">15</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av15" checked><span class="av-label av-support">A/V Support</span></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">109</td><td>Agentic Brunch - ERC-8004</td><td><span class="tag cyan">Feb 25</span></td><td style="text-align:right" class="number green">164</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av16"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">111</td><td>Physical AI Meetup - Robots at Home</td><td><span class="tag cyan">Feb 26</span></td><td style="text-align:right" class="number green">309</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av17"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">118</td><td>Reactive to Predictive Neurology: Neuro Fireside Series</td><td><span class="tag cyan">Feb 27</span></td><td style="text-align:right" class="number green">690</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av18"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">119</td><td>The Future of Work Prediction Market &mdash; 2025 Post-Mortem</td><td><span class="tag cyan">Feb 27</span></td><td style="text-align:right" class="number green">12</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av19"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">146</td><td>Engineered Flow: How Top Tech Leaders Enter Flow on Demand</td><td><span class="tag cyan">Mar 5</span></td><td style="text-align:right" class="number green">243</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av20"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">148</td><td>e/acc &amp; d/acc: a convo with vitalik &amp; beff</td><td><span class="tag cyan">Mar 5</span></td><td style="text-align:right" class="number green">151</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av21"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">154</td><td>Turbine Trials</td><td><span class="tag cyan">Mar 6</span></td><td style="text-align:right" class="number green">10</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av22" checked><span class="av-label av-support">A/V Support</span></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">162</td><td>Physical AI Gym X Open Claw Workshop</td><td><span class="tag cyan">Mar 7</span></td><td style="text-align:right" class="number green">316</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av23" checked><span class="av-label av-support">A/V Support</span></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">175</td><td>ETHSF 26 Opening Day</td><td><span class="tag cyan">Mar 9</span></td><td style="text-align:right" class="number green">205</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av24" checked><span class="av-label av-support">A/V Support</span></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">178</td><td>How We Can Reach Longevity Escape Velocity by 2040</td><td><span class="tag cyan">Mar 10</span></td><td style="text-align:right" class="number green">490</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av25" checked><span class="av-label av-support">A/V Support</span></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">181</td><td>Ethereum Unblock: AI-driven Design Sprint</td><td><span class="tag cyan">Mar 10</span></td><td style="text-align:right" class="number green">436</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av26" checked><span class="av-label av-support">A/V Support</span></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">182</td><td>ETHSF26 Agentic Prototyping Day</td><td><span class="tag cyan">Mar 10</span></td><td style="text-align:right" class="number green">17</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av27" checked><span class="av-label av-support">A/V Support</span></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">183</td><td>Rising Sparks: Women Igniting Burning Man's Next Generation</td><td><span class="tag cyan">Mar 11</span></td><td style="text-align:right" class="number green">12</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av28" checked><span class="av-label av-support">A/V Support</span></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">187</td><td>ETHSF26 Ecosystem Day</td><td><span class="tag cyan">Mar 11</span></td><td style="text-align:right" class="number green">14</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av29" checked><span class="av-label av-support">A/V Support</span></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">188</td><td>Arkhai Agent Market Launch Event</td><td><span class="tag cyan">Mar 11</span></td><td style="text-align:right" class="number green">20</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av30"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">189</td><td>Agents That Trade</td><td><span class="tag cyan">Mar 12</span></td><td style="text-align:right" class="number green">357</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av31"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">190</td><td>The Audio Layer: Powering Real-World Voice Agents</td><td><span class="tag cyan">Mar 12</span></td><td style="text-align:right" class="number green">50</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av32"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">192</td><td>Agentic Smash Fight Night</td><td><span class="tag cyan">Mar 12</span></td><td style="text-align:right" class="number green">0</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av33"></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">194</td><td>ETHSF26 Unblock Closing + Demos!</td><td><span class="tag cyan">Mar 12</span></td><td style="text-align:right" class="number green">21</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av34" checked><span class="av-label av-support">A/V Support</span></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">198</td><td>Robotic Agents Hackathon</td><td><span class="tag cyan">Mar 13</span></td><td style="text-align:right" class="number green">98</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+            <tr><td style="text-align:center"><input type="checkbox" id="av35" checked><span class="av-label av-support">A/V Support</span></td><td style="text-align:center"><input type="checkbox" checked><span class="av-label planning-support">Planning Support</span></td><td class="rank">199</td><td>ETHSF26 Community Day: Whitepaper Reading Club &amp; KryptoPlanet</td><td><span class="tag cyan">Mar 13</span></td><td style="text-align:right" class="number green">35</td><td style="text-align:center"><button class="av-trash" title="Hide event">&#128465;</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p id="av-count" style="margin-top:16px;color:var(--accent);font-size:14px;font-weight:600"></p>
+    </div>
+  </div>
+</section>
+
+<!-- Recordings Section -->
+<section id="recordings">
+  <div class="container">
+    <div class="section-label">Media</div>
+    <h2 class="section-title">Recordings &amp; Livestreams</h2>
+    <p class="section-desc">Event recordings and livestreams produced and managed by Colin via StreamYard.</p>
+
+    <div class="video-grid fade-in">
+      <div class="video-card">
+        <div class="video-wrap">
+          <iframe loading="lazy" src="https://streamyard.com/e/pkpdanajic9b" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-wrap">
+          <iframe loading="lazy" src="https://streamyard.com/e/wwiu32ysfxma" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-wrap">
+          <iframe loading="lazy" src="https://streamyard.com/e/kmumd34egdkb" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-wrap">
+          <iframe loading="lazy" src="https://streamyard.com/e/9wp5kybfz8tn" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-wrap">
+          <iframe loading="lazy" src="https://streamyard.com/e/nhh9sv9ns9ef" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-wrap">
+          <iframe loading="lazy" src="https://streamyard.com/e/3kbixz6xj8a3" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-wrap">
+          <iframe loading="lazy" src="https://streamyard.com/e/vi77crxxxs8v" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-wrap">
+          <iframe loading="lazy" src="https://streamyard.com/e/fyjsyyyrq8hg" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-wrap">
+          <iframe loading="lazy" src="https://streamyard.com/e/9upv54smbyuf" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-wrap">
+          <iframe loading="lazy" src="https://streamyard.com/e/5x4hqnvzyn6p" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Email Analytics Section -->
+<section id="email-analytics">
+  <div class="container">
+    <div class="section-label">Performance</div>
+    <h2 class="section-title">Beehiiv Email Marketing</h2>
+    <p class="section-desc">Aggregate email performance across 58 campaigns sent to 105,281 unique subscribers via SendGrid (Beehiiv Post Dashboard).</p>
+
+    <div class="stats-grid fade-in">
+      <div class="stat-card cyan">
+        <div class="stat-number">3.6M</div>
+        <div class="stat-label">Delivered</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-number">1.4M</div>
+        <div class="stat-label">Opened</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-number">26,763</div>
+        <div class="stat-label">Unique Clicks</div>
+      </div>
+      <div class="stat-card pink">
+        <div class="stat-number">23,626</div>
+        <div class="stat-label">Verified Unique Clicks</div>
+      </div>
+      <div class="stat-card cyan">
+        <div class="stat-number">105,281</div>
+        <div class="stat-label">Unique Subscribers</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-number">58</div>
+        <div class="stat-label">Campaigns Sent</div>
+      </div>
+    </div>
+
+    <div class="subsection fade-in">
+      <h3>Engagement Rates</h3>
+      <div class="stats-grid" style="grid-template-columns:repeat(5,1fr)">
+        <div class="stat-card cyan">
+          <div class="stat-number" style="font-size:1.8rem">38.65%</div>
+          <div class="stat-label">Open Rate</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-number" style="font-size:1.8rem">1.93%</div>
+          <div class="stat-label">Click-Through Rate</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-number" style="font-size:1.8rem">1.7%</div>
+          <div class="stat-label">Verified CTR</div>
+        </div>
+        <div class="stat-card pink">
+          <div class="stat-number" style="font-size:1.8rem">0.34%</div>
+          <div class="stat-label">Unsubscribe Rate</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-number" style="font-size:1.8rem">0.004%</div>
+          <div class="stat-label">Spam Report Rate</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection fade-in">
+      <h3>Recent Campaigns</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th style="min-width:90px">Date</th>
+              <th>Subject</th>
+              <th style="text-align:right">Sent</th>
+              <th style="text-align:right">Delivered</th>
+              <th style="text-align:right">Unique Opens</th>
+              <th style="text-align:right">Open Rate</th>
+              <th style="text-align:right">Clicks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="tag cyan">Mar 10</span></td>
+              <td>Funding the Commons SF: Inte...</td>
+              <td style="text-align:right" class="number">76,193</td>
+              <td style="text-align:right" class="number">74,366</td>
+              <td style="text-align:right" class="number">23,319</td>
+              <td style="text-align:right" class="number cyan">31.36%</td>
+              <td style="text-align:right" class="number">389</td>
+            </tr>
+            <tr>
+              <td><span class="tag cyan">Mar 7</span></td>
+              <td>Ethereum Unblock: AI-driven...</td>
+              <td style="text-align:right" class="number">76,528</td>
+              <td style="text-align:right" class="number">74,689</td>
+              <td style="text-align:right" class="number">23,688</td>
+              <td style="text-align:right" class="number cyan">31.72%</td>
+              <td style="text-align:right" class="number">304</td>
+            </tr>
+            <tr>
+              <td><span class="tag cyan">Mar 7</span></td>
+              <td>Ethereum SF 2026</td>
+              <td style="text-align:right" class="number">76,408</td>
+              <td style="text-align:right" class="number">74,525</td>
+              <td style="text-align:right" class="number">32,204</td>
+              <td style="text-align:right" class="number cyan">43.21%</td>
+              <td style="text-align:right" class="number">866</td>
+            </tr>
+            <tr>
+              <td><span class="tag cyan">Feb 27</span></td>
+              <td>AI+ RenAIssance Summit 2026</td>
+              <td style="text-align:right" class="number">77,130</td>
+              <td style="text-align:right" class="number">75,320</td>
+              <td style="text-align:right" class="number">25,285</td>
+              <td style="text-align:right" class="number cyan">33.57%</td>
+              <td style="text-align:right" class="number">612</td>
+            </tr>
+            <tr>
+              <td><span class="tag cyan">Feb 27</span></td>
+              <td>Engineered Flow: How Top Tec...</td>
+              <td style="text-align:right" class="number">77,078</td>
+              <td style="text-align:right" class="number">75,268</td>
+              <td style="text-align:right" class="number">25,325</td>
+              <td style="text-align:right" class="number cyan">33.65%</td>
+              <td style="text-align:right" class="number">306</td>
+            </tr>
+            <tr>
+              <td><span class="tag cyan">Feb 25</span></td>
+              <td>Funding the Commons SF: Inte...</td>
+              <td style="text-align:right" class="number">77,482</td>
+              <td style="text-align:right" class="number">75,825</td>
+              <td style="text-align:right" class="number">26,528</td>
+              <td style="text-align:right" class="number cyan">34.99%</td>
+
+              <td style="text-align:right" class="number">348</td>
+            </tr>
+            <tr>
+              <td><span class="tag cyan">Feb 24</span></td>
+              <td>Reactive to Predictive Neuro...</td>
+              <td style="text-align:right" class="number">77,757</td>
+              <td style="text-align:right" class="number">76,002</td>
+              <td style="text-align:right" class="number">27,230</td>
+              <td style="text-align:right" class="number cyan">35.83%</td>
+              <td style="text-align:right" class="number">334</td>
+            </tr>
+            <tr>
+              <td><span class="tag cyan">Feb 12</span></td>
+              <td>Claws Out: Agent Demo Day</td>
+              <td style="text-align:right" class="number">78,594</td>
+              <td style="text-align:right" class="number">76,573</td>
+              <td style="text-align:right" class="number">38,262</td>
+              <td style="text-align:right" class="number cyan">49.97%</td>
+              <td style="text-align:right" class="number">1,972</td>
+            </tr>
+            <tr>
+              <td><span class="tag cyan">Feb 6</span></td>
+              <td>Alien.org vs OpenClaw...</td>
+              <td style="text-align:right" class="number">80,742</td>
+              <td style="text-align:right" class="number">77,545</td>
+              <td style="text-align:right" class="number">26,510</td>
+              <td style="text-align:right" class="number cyan">34.19%</td>
+              <td style="text-align:right" class="number">363</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection fade-in">
+      <h3>Performance by Content Tag</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Content Tag</th>
+              <th style="text-align:right">Sent</th>
+              <th style="text-align:right">Delivered</th>
+              <th style="text-align:right">Opened</th>
+              <th style="text-align:right">Open Rate</th>
+              <th style="text-align:right">Unique Clicks</th>
+              <th style="text-align:right">CTR</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Frontier Tower</strong></td>
+              <td style="text-align:right" class="number">3,837,409</td>
+              <td style="text-align:right" class="number">3,594,991</td>
+              <td style="text-align:right" class="number">1,389,039</td>
+              <td style="text-align:right" class="number cyan">38.64%</td>
+              <td style="text-align:right" class="number">26,763</td>
+              <td style="text-align:right" class="number cyan">1.93%</td>
+            </tr>
+            <tr>
+              <td><strong>Meta</strong></td>
+              <td style="text-align:right" class="number">880,448</td>
+              <td style="text-align:right" class="number">836,788</td>
+              <td style="text-align:right" class="number">309,774</td>
+              <td style="text-align:right" class="number cyan">37.02%</td>
+              <td style="text-align:right" class="number">4,352</td>
+              <td style="text-align:right" class="number cyan">1.4%</td>
+            </tr>
+            <tr>
+              <td><strong>Ethereum</strong></td>
+              <td style="text-align:right" class="number">494,540</td>
+              <td style="text-align:right" class="number">462,900</td>
+              <td style="text-align:right" class="number">184,109</td>
+              <td style="text-align:right" class="number cyan">39.77%</td>
+              <td style="text-align:right" class="number">3,701</td>
+              <td style="text-align:right" class="number cyan">2.01%</td>
+            </tr>
+            <tr>
+              <td><strong>Omi</strong></td>
+              <td style="text-align:right" class="number">293,365</td>
+              <td style="text-align:right" class="number">274,435</td>
+              <td style="text-align:right" class="number">114,468</td>
+              <td style="text-align:right" class="number cyan">41.71%</td>
+              <td style="text-align:right" class="number">3,537</td>
+              <td style="text-align:right" class="number cyan">3.09%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mailing Lists Section -->
+<section id="mailing-lists">
+  <div class="container">
+    <div class="section-label">Data Pipeline</div>
+    <h2 class="section-title">Brevo Email List Segmentation</h2>
+    <p class="section-desc">Built a complete pipeline to segment 189,056 leads into targetable audiences, filter suppressions, and export clean lists for Brevo import. Lists delivered to Aqueel Ali at Funding The Commons.</p>
+
+    <div class="subsection fade-in">
+      <h3>Pipeline Steps</h3>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-date">Step 1</div>
+          <h4>Built 46 Interest Segments</h4>
+          <p>Used keyword matching on event titles to tag leads into segments like AI (12,008), Neurotech (2,243), Music (9,409), Ethereum (7,680), and 42 more categories.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Step 2</div>
+          <h4>Pulled SendGrid Suppressions</h4>
+          <p>Fetched all bounces, invalid emails, spam reports, global unsubscribes, and group unsubscribes from the SendGrid API — 8,606 total emails to block out of 189,056.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Step 3</div>
+          <h4>Created Tagged Brevo List</h4>
+          <p>180,457 clean contacts with EMAIL, FIRSTNAME, TAGS columns — semicolon-separated segments (e.g. AI;Crypto;Founders;Hackathons) preserving all overlapping tags.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Step 4</div>
+          <h4>Created Non-Overlapping Lists</h4>
+          <p>Each email assigned to exactly one segment for simplified sending workflows at FTC.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Step 5</div>
+          <h4>Identified Untagged Contacts</h4>
+          <p>50,594 leads with no segment membership — nearly all only attended general-topic events (ice tank challenge, office hours, etc.).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection fade-in">
+      <h3>SendGrid Suppressions</h3>
+      <p>8,606 emails blocked from a pool of 189,056 contacts</p>
+      <div class="suppression-grid">
+        <div class="suppression-card">
+          <div class="stat-number">6,360</div>
+          <div class="stat-label">Bounces</div>
+        </div>
+        <div class="suppression-card">
+          <div class="stat-number">163</div>
+          <div class="stat-label">Invalid Emails</div>
+        </div>
+        <div class="suppression-card">
+          <div class="stat-number">11</div>
+          <div class="stat-label">Spam Reports</div>
+        </div>
+        <div class="suppression-card">
+          <div class="stat-number">66</div>
+          <div class="stat-label">Global Unsubs</div>
+        </div>
+        <div class="suppression-card">
+          <div class="stat-number">2,075</div>
+          <div class="stat-label">Group Unsubs</div>
+        </div>
+        <div class="suppression-card">
+          <div class="stat-number">8,606</div>
+          <div class="stat-label">Total Blocked</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection fade-in">
+      <h3>Non-Overlapping Segments (for Brevo)</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Segment</th>
+              <th style="text-align:right">Emails</th>
+              <th style="width:40px"></th>
+              <th>Segment</th>
+              <th style="text-align:right">Emails</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>AI</td><td style="text-align:right" class="number cyan">12,008</td>
+              <td></td>
+              <td>Founders</td><td style="text-align:right" class="number cyan">4,948</td>
+            </tr>
+            <tr>
+              <td>Hackathons</td><td style="text-align:right" class="number cyan">11,027</td>
+              <td></td>
+              <td>Burning Man</td><td style="text-align:right" class="number cyan">4,191</td>
+            </tr>
+            <tr>
+              <td>Music</td><td style="text-align:right" class="number cyan">9,409</td>
+              <td></td>
+              <td>Health</td><td style="text-align:right" class="number cyan">3,745</td>
+            </tr>
+            <tr>
+              <td>Ethereum</td><td style="text-align:right" class="number cyan">7,680</td>
+              <td></td>
+              <td>Salons</td><td style="text-align:right" class="number cyan">3,440</td>
+            </tr>
+            <tr>
+              <td>Agents</td><td style="text-align:right" class="number cyan">7,214</td>
+              <td></td>
+              <td>Frontier Tower</td><td style="text-align:right" class="number cyan">3,353</td>
+            </tr>
+            <tr>
+              <td>OpenClaw</td><td style="text-align:right" class="number cyan">6,388</td>
+              <td></td>
+              <td>Tarot</td><td style="text-align:right" class="number cyan">3,123</td>
+            </tr>
+            <tr>
+              <td>XR</td><td style="text-align:right" class="number cyan">6,315</td>
+              <td></td>
+              <td>Robotics</td><td style="text-align:right" class="number cyan">2,650</td>
+            </tr>
+            <tr>
+              <td>Social</td><td style="text-align:right" class="number cyan">5,763</td>
+              <td></td>
+              <td>Neurotech</td><td style="text-align:right" class="number cyan">2,243</td>
+            </tr>
+            <tr>
+              <td>Developers</td><td style="text-align:right" class="number cyan">5,284</td>
+              <td></td>
+              <td>Coworking</td><td style="text-align:right" class="number cyan">2,143</td>
+            </tr>
+            <tr>
+              <td>Vibe Coding</td><td style="text-align:right" class="number cyan">5,280</td>
+              <td></td>
+              <td colspan="2" style="color:var(--text-muted);font-style:italic">+ 27 smaller segments</td>
+            </tr>
+            <tr>
+              <td>Investors</td><td style="text-align:right" class="number cyan">5,268</td>
+              <td></td>
+              <td style="font-weight:600">Untagged</td><td style="text-align:right" class="number pink">50,601</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection fade-in">
+      <h3>Overlapping Segments (Interest Tags)</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Segment</th>
+              <th style="text-align:right">Emails</th>
+              <th style="width:40px"></th>
+              <th>Segment</th>
+              <th style="text-align:right">Emails</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>AI</td><td style="text-align:right" class="number cyan">74,061</td><td></td><td>Crypto</td><td style="text-align:right" class="number cyan">11,067</td></tr>
+            <tr><td>Hackathons</td><td style="text-align:right" class="number cyan">67,989</td><td></td><td>Longevity</td><td style="text-align:right" class="number cyan">10,343</td></tr>
+            <tr><td>Agents</td><td style="text-align:right" class="number cyan">44,015</td><td></td><td>Women</td><td style="text-align:right" class="number cyan">7,557</td></tr>
+            <tr><td>Music</td><td style="text-align:right" class="number cyan">43,279</td><td></td><td>Makerspace</td><td style="text-align:right" class="number cyan">7,184</td></tr>
+            <tr><td>XR</td><td style="text-align:right" class="number cyan">38,681</td><td></td><td>Career</td><td style="text-align:right" class="number cyan">7,145</td></tr>
+            <tr><td>Social</td><td style="text-align:right" class="number cyan">35,279</td><td></td><td>Playful Sincerity</td><td style="text-align:right" class="number cyan">6,344</td></tr>
+            <tr><td>Investors</td><td style="text-align:right" class="number cyan">32,359</td><td></td><td>Movement</td><td style="text-align:right" class="number cyan">5,455</td></tr>
+            <tr><td>Developers</td><td style="text-align:right" class="number cyan">32,248</td><td></td><td>Dance</td><td style="text-align:right" class="number cyan">5,326</td></tr>
+            <tr><td>Vibe Coding</td><td style="text-align:right" class="number cyan">32,230</td><td></td><td>Parties</td><td style="text-align:right" class="number cyan">4,538</td></tr>
+            <tr><td>OpenClaw</td><td style="text-align:right" class="number cyan">32,071</td><td></td><td>Games</td><td style="text-align:right" class="number cyan">3,051</td></tr>
+            <tr><td>Ethereum</td><td style="text-align:right" class="number cyan">31,892</td><td></td><td>Governance</td><td style="text-align:right" class="number cyan">2,565</td></tr>
+            <tr><td>Founders</td><td style="text-align:right" class="number cyan">29,650</td><td></td><td>Human Flourishing</td><td style="text-align:right" class="number cyan">2,472</td></tr>
+            <tr><td>Burning Man</td><td style="text-align:right" class="number cyan">25,460</td><td></td><td>Biotech</td><td style="text-align:right" class="number cyan">2,340</td></tr>
+            <tr><td>Art</td><td style="text-align:right" class="number cyan">23,506</td><td></td><td>Authentic Relating</td><td style="text-align:right" class="number cyan">1,940</td></tr>
+            <tr><td>Salons</td><td style="text-align:right" class="number cyan">20,452</td><td></td><td>Spirituality</td><td style="text-align:right" class="number cyan">1,793</td></tr>
+            <tr><td>Frontier Tower</td><td style="text-align:right" class="number cyan">20,211</td><td></td><td>Psychedelics</td><td style="text-align:right" class="number cyan">1,566</td></tr>
+            <tr><td>Tarot</td><td style="text-align:right" class="number cyan">18,938</td><td></td><td>Fitness</td><td style="text-align:right" class="number cyan">1,535</td></tr>
+            <tr><td>Health</td><td style="text-align:right" class="number cyan">18,749</td><td></td><td>Cooking</td><td style="text-align:right" class="number cyan">1,350</td></tr>
+            <tr><td>Robotics</td><td style="text-align:right" class="number cyan">15,754</td><td></td><td>Tea</td><td style="text-align:right" class="number cyan">1,041</td></tr>
+            <tr><td>Neurotech</td><td style="text-align:right" class="number cyan">13,384</td><td></td><td>Wellness</td><td style="text-align:right" class="number cyan">780</td></tr>
+            <tr><td>Coworking</td><td style="text-align:right" class="number cyan">12,821</td><td></td><td>Scrum</td><td style="text-align:right" class="number cyan">530</td></tr>
+            <tr><td colspan="2"></td><td></td><td>Placeholders</td><td style="text-align:right" class="number cyan">357</td></tr>
+            <tr><td colspan="2"></td><td></td><td>High School</td><td style="text-align:right" class="number cyan">151</td></tr>
+            <tr><td colspan="2"></td><td></td><td>Men</td><td style="text-align:right" class="number cyan">55</td></tr>
+            <tr><td colspan="2"></td><td></td><td>Sustainability</td><td style="text-align:right" class="number cyan">49</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Email Invites Section -->
+<section id="email-invites">
+  <div class="container">
+    <div class="section-label">Campaigns</div>
+    <h2 class="section-title">SendGrid Email Invite System</h2>
+    <p class="section-desc">A local web app for creating and sending event invitation emails via SendGrid — with segment targeting, two professional template designs, and full send tracking.</p>
+
+    <div class="stats-grid fade-in">
+      <div class="stat-card cyan">
+        <div class="stat-number">196,102</div>
+        <div class="stat-label">Requests</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-number">181,471</div>
+        <div class="stat-label">Delivered (92.54%)</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-number">18,176</div>
+        <div class="stat-label">Opened (9.27%)</div>
+      </div>
+      <div class="stat-card cyan">
+        <div class="stat-number">6</div>
+        <div class="stat-label">Clicked (0.00%)</div>
+      </div>
+      <div class="stat-card pink">
+        <div class="stat-number">6,380</div>
+        <div class="stat-label">Bounces (3.25%)</div>
+      </div>
+      <div class="stat-card pink">
+        <div class="stat-number">13</div>
+        <div class="stat-label">Spam Reports (0.01%)</div>
+      </div>
+    </div>
+
+    <div class="subsection fade-in">
+      <h3>Invites by Event</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Event</th>
+              <th style="text-align:right">Invites Sent</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="rank">1</td>
+              <td>Funding the Commons SF: Intelligence at the Frontier</td>
+              <td style="text-align:right" class="number cyan">96,015</td>
+            </tr>
+            <tr>
+              <td class="rank">2</td>
+              <td>Arkhai Agent Market Launch Event</td>
+              <td style="text-align:right" class="number cyan">44,141</td>
+            </tr>
+            <tr>
+              <td class="rank">3</td>
+              <td>ETHSF 26 Opening Day</td>
+              <td style="text-align:right" class="number cyan">32,135</td>
+            </tr>
+            <tr>
+              <td class="rank">4</td>
+              <td>NeuroTechSF Fireside Chat</td>
+              <td style="text-align:right" class="number cyan">13,384</td>
+            </tr>
+            <tr>
+              <td class="rank">5</td>
+              <td>How we can reach Longevity Escape Velocity by 2040</td>
+              <td style="text-align:right" class="number cyan">10,369</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="two-col fade-in">
+      <div class="subsection">
+        <h3>Core Features</h3>
+        <div class="features-grid" style="grid-template-columns:1fr">
+          <div class="feature-card">
+            <h3>Event Selection</h3>
+            <p>Dropdown of all events from the database with search. Shows event title, date, location, and cover image pulled from Luma.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Two Email Designs</h3>
+            <p><strong>Classic</strong> — Luma-style personal invitation with event card, date/time, location, and RSVP button.<br><strong>FTC Branded</strong> — Custom template with hero image, red CTA buttons, speaker headshots grid, and two blurb variants.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Audience Targeting</h3>
+            <p>Send to any of 46 segments, past attendees of similar events, with cross-segment deduplication — no one gets emailed twice for the same event.</p>
+          </div>
+        </div>
+      </div>
+      <div class="subsection">
+        <h3>Deliverability &amp; Tracking</h3>
+        <div class="features-grid" style="grid-template-columns:1fr">
+          <div class="feature-card">
+            <h3>Deliverability Optimizations</h3>
+            <p>Click/open tracking disabled to reduce spam signals. Custom plain text version. HMAC-signed unsubscribe links via SendGrid ASM groups. Speaker images hosted on Vercel.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Send Tracking</h3>
+            <p>Every invite recorded in sent_invites table. Full send history log with segment, count, and timestamp. ML-scored similar event recommendations.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Send Modes</h3>
+            <p><strong>Test</strong> — Single email for preview. <strong>Bulk</strong> — Entire segment with confirmation modal showing recipient count. Custom subject lines per design.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection fade-in">
+      <h3>SendGrid Suppressions</h3>
+      <p>8,606 emails blocked from a pool of 189,056 contacts</p>
+      <div class="suppression-grid">
+        <div class="suppression-card">
+          <div class="stat-number">6,360</div>
+          <div class="stat-label">Bounces</div>
+        </div>
+        <div class="suppression-card">
+          <div class="stat-number">163</div>
+          <div class="stat-label">Invalid Emails</div>
+        </div>
+        <div class="suppression-card">
+          <div class="stat-number">11</div>
+          <div class="stat-label">Spam Reports</div>
+        </div>
+        <div class="suppression-card">
+          <div class="stat-number">66</div>
+          <div class="stat-label">Global Unsubs</div>
+        </div>
+        <div class="suppression-card">
+          <div class="stat-number">2,075</div>
+          <div class="stat-label">Group Unsubs</div>
+        </div>
+        <div class="suppression-card">
+          <div class="stat-number">8,606</div>
+          <div class="stat-label">Total Blocked</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Furniture Section -->
+<section id="furniture">
+  <div class="container">
+    <div class="section-label">Contributions</div>
+    <h2 class="section-title">Furniture Provided by Colin</h2>
+    <p class="section-desc">Seating, tables, displays, appliances, and equipment sourced and provided for Frontier Tower common areas and event spaces.</p>
+
+    <div class="photo-grid fade-in">
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/lounge-chairs.jpeg" alt="Lounge accent chairs" loading="lazy">
+        <div class="photo-label">Accent lounge chairs — yellow &amp; grey seating area</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/black-sofa.jpeg" alt="Black 3-seat sofa" loading="lazy">
+        <div class="photo-label">Black 3-seat sofa with throw pillows</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/leather-futon.jpeg" alt="Leather futon with cupholders" loading="lazy">
+        <div class="photo-label">Leather futon sofa with built-in cupholders</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/sectional-sofa.jpeg" alt="L-shaped sectional sofa" loading="lazy">
+        <div class="photo-label">Beige L-shaped sectional sofa</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/staging-area.jpeg" alt="Furniture staging area" loading="lazy">
+        <div class="photo-label">Furniture staging area — nesting tables, storage, decor</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/bar-tables.jpeg" alt="Bar-height tables and chairs" loading="lazy">
+        <div class="photo-label">Bar-height tables and ladder-back chairs</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/bar-stools-window.jpeg" alt="Bar stools along windows" loading="lazy">
+        <div class="photo-label">Bar stools and round tables along the window row</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/kitchen-bar.jpeg" alt="Kitchen bar with stools" loading="lazy">
+        <div class="photo-label">Kitchen bar counter with stools</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/tv-stand.jpeg" alt="Large TV on rolling stand" loading="lazy">
+        <div class="photo-label">Large TV on rolling stand — event display</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/samsung-display.jpeg" alt="Samsung large display" loading="lazy">
+        <div class="photo-label">Samsung large-format display on stand</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/tv-stand-back.jpeg" alt="TV stand rear view" loading="lazy">
+        <div class="photo-label">Rolling TV stand — rear view with mounts</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/microwaves.jpeg" alt="Two microwaves" loading="lazy">
+        <div class="photo-label">Two microwaves — GE &amp; Black+Decker</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/ping-pong.jpeg" alt="Ping pong table" loading="lazy">
+        <div class="photo-label">Ping pong table in common area</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/office-desks.jpeg" alt="Office desks and cushions" loading="lazy">
+        <div class="photo-label">Office desks, cushions, and workspace furniture</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/egg-chair.jpeg" alt="Egg chair and tulip table" loading="lazy">
+        <div class="photo-label">Egg chair &amp; tulip side table</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/refrigerators.jpeg" alt="Three refrigerators" loading="lazy">
+        <div class="photo-label">Three refrigerators — Frigidaire, Whirlpool, glass-door cooler</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/office-chairs.jpeg" alt="Ergonomic office chairs" loading="lazy">
+        <div class="photo-label">Ergonomic office chairs — Herman Miller Sayl &amp; mesh task chairs</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/standing-desks.jpeg" alt="Electric standing desks" loading="lazy">
+        <div class="photo-label">Electric standing desks with monitor arms</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/tv-on-stand2.jpeg" alt="TV on rolling stand" loading="lazy">
+        <div class="photo-label">TV on rolling stand — event room setup</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/whiteboard.jpeg" alt="Rolling whiteboard" loading="lazy">
+        <div class="photo-label">Rolling whiteboard for workshops &amp; meetings</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)">
+        <img src="images/large-display-floor.jpeg" alt="Large wall-mount display" loading="lazy">
+        <div class="photo-label">Large wall-mount display with mounting hardware</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WiFi Portal Section -->
+<section id="wifi-portal">
+  <div class="container">
+    <div class="section-label">Product</div>
+    <h2 class="section-title">Frontier Tower WiFi Portal</h2>
+    <p class="section-desc">A full-featured captive portal and admin system for Frontier Tower, handling everything from WiFi registration to career postings and event management.</p>
+
+    <div class="subsection fade-in">
+      <h3>Guest Portal Statistics</h3>
+      <div class="two-col" style="gap:24px;margin-bottom:32px">
+        <div>
+          <p style="color:var(--text-muted);font-size:14px;margin-bottom:12px">Lifetime Totals</p>
+          <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:0">
+            <div class="stat-card cyan">
+              <div class="stat-number" style="font-size:1.8rem">4,147</div>
+              <div class="stat-label">Total Page Views</div>
+            </div>
+            <div class="stat-card purple">
+              <div class="stat-number" style="font-size:1.8rem">1,522</div>
+              <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card green">
+              <div class="stat-number" style="font-size:1.8rem">927</div>
+              <div class="stat-label">WiFi Guests</div>
+            </div>
+            <div class="stat-card pink">
+              <div class="stat-number" style="font-size:1.8rem">521</div>
+              <div class="stat-label">Event WiFi Guests</div>
+            </div>
+            <div class="stat-card cyan">
+              <div class="stat-number" style="font-size:1.8rem">461</div>
+              <div class="stat-label">Events</div>
+            </div>
+            <div class="stat-card purple">
+              <div class="stat-number" style="font-size:1.8rem">74</div>
+              <div class="stat-label">WiFi Members</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p style="color:var(--text-muted);font-size:14px;margin-bottom:12px">Today's Activity</p>
+          <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:0">
+            <div class="stat-card cyan">
+              <div class="stat-number" style="font-size:1.8rem">60</div>
+              <div class="stat-label">Visitors Today</div>
+            </div>
+            <div class="stat-card pink">
+              <div class="stat-number" style="font-size:1.8rem">25</div>
+              <div class="stat-label">Event Guests</div>
+            </div>
+            <div class="stat-card green">
+              <div class="stat-number" style="font-size:1.8rem">4</div>
+              <div class="stat-label">Guests Today</div>
+            </div>
+            <div class="stat-card purple">
+              <div class="stat-number" style="font-size:1.8rem">2</div>
+              <div class="stat-label">Events Today</div>
+            </div>
+            <div class="stat-card cyan">
+              <div class="stat-number" style="font-size:1.8rem">0</div>
+              <div class="stat-label">Members Today</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection fade-in">
+      <h3>Public Routes</h3>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon cyan">&#128246;</div>
+          <h3>WiFi Registration</h3>
+          <p>Captive portal with member, guest, and event attendee flows. UniFi network authorization on form submission.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon pink">&#127760;</div>
+          <h3>Multi-Language Support</h3>
+          <p>10 languages with a flag/name selector that preserves UniFi query parameters across navigation.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon green">&#128247;</div>
+          <h3>/gallery</h3>
+          <p>iCloud shared album photo gallery with lightbox viewer for browsing community photos.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon purple">&#127963;</div>
+          <h3>/virtual-tour</h3>
+          <p>Amenities and communities displayed by floor with expandable cards for each space.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">&#128188;</div>
+          <h3>/careers</h3>
+          <p>Community job board with public posting and admin moderation workflow.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon cyan">&#128421;</div>
+          <h3>/jobs</h3>
+          <p>Retro terminal-themed internal positions application page.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon pink">&#128221;</div>
+          <h3>/apply-to-join</h3>
+          <p>Membership inquiry form with automated email notifications to admins.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon green">&#128172;</div>
+          <h3>/chat &amp; /booking &amp; /tour</h3>
+          <p>Telegram invite requests, event/meeting room booking, and building tour scheduling forms.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection fade-in">
+      <h3>Admin Dashboard — 10 Tabs</h3>
+      <div class="admin-tabs">
+        <div class="admin-tab">
+          <h4>&#128202; Analytics</h4>
+          <p>Leads by type/status, events per month, lifetime totals, today's counters, building location map</p>
+        </div>
+        <div class="admin-tab">
+          <h4>&#128100; Users</h4>
+          <p>WiFi members and guests management</p>
+        </div>
+        <div class="admin-tab">
+          <h4>&#127879; Events</h4>
+          <p>Full CRUD, AI bulk import via GPT-4o, Luma sync, local image hosting, soft delete</p>
+        </div>
+        <div class="admin-tab">
+          <h4>&#127993; Segments</h4>
+          <p>AI-powered event categorization with color-coded tiles and inline tag editing</p>
+        </div>
+        <div class="admin-tab">
+          <h4>&#128203; Leads</h4>
+          <p>Unified view across 6 sources with inline status updates and multi-filter</p>
+        </div>
+        <div class="admin-tab">
+          <h4>&#128188; Careers</h4>
+          <p>Approve/reject community job submissions, toggle featured, soft delete</p>
+        </div>
+        <div class="admin-tab">
+          <h4>&#128218; Directory</h4>
+          <p>Tenant listings with filterable cards, logo upload, hierarchical floor support</p>
+        </div>
+        <div class="admin-tab">
+          <h4>&#128246; WiFi</h4>
+          <p>UniFi controller configuration and network settings</p>
+        </div>
+        <div class="admin-tab">
+          <h4>&#128187; Devices</h4>
+          <p>Live connected client list from UniFi API with search and wireless/wired filter</p>
+        </div>
+        <div class="admin-tab">
+          <h4>&#128272; Admins</h4>
+          <p>Login history and role management (Owner/Staff)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection fade-in">
+      <h3>Additional Features</h3>
+      <div class="pill-list">
+        <div class="pill"><span class="tag cyan">Dark Mode</span></div>
+        <div class="pill"><span class="tag pink">Guest WiFi Notice</span></div>
+        <div class="pill"><span class="tag green">Matrix Modal</span></div>
+        <div class="pill"><span class="tag purple">Directory Listings</span></div>
+        <div class="pill"><span class="tag orange">Self-serve Submissions</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <span class="lightbox-close">&times;</span>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <p>Frontier Tower Work Report &mdash; Built for <a href="#">Frontier Tower</a></p>
+  </div>
+</footer>
+
+<script>
+  // A/V checkbox labels and counter
+  document.querySelectorAll('#av tbody tr').forEach(row => {
+    const cells = row.querySelectorAll('td');
+    const avCb = cells[0].querySelector('input[type="checkbox"]');
+    const assistCb = cells[1].querySelector('input[type="checkbox"]');
+
+    avCb.addEventListener('change', () => {
+      let label = cells[0].querySelector('.av-label');
+      if (avCb.checked) {
+        if (!label) {
+          label = document.createElement('span');
+          label.className = 'av-label av-support';
+          label.textContent = 'A/V Support';
+          cells[0].appendChild(label);
+        }
+      } else if (label) {
+        label.remove();
+      }
+      updateAvCount();
+    });
+
+    assistCb.addEventListener('change', () => {
+      let label = cells[1].querySelector('.av-label');
+      if (assistCb.checked) {
+        if (!label) {
+          label = document.createElement('span');
+          label.className = 'av-label planning-support';
+          label.textContent = 'Planning Support';
+          cells[1].appendChild(label);
+        }
+      } else if (label) {
+        label.remove();
+      }
+      updateAvCount();
+    });
+  });
+
+  function updateAvCount() {
+    const checked = document.querySelectorAll('#av input[type="checkbox"]:checked').length;
+    const total = document.querySelectorAll('#av input[type="checkbox"]').length;
+    document.getElementById('av-count').textContent = checked > 0 ? checked + ' of ' + total + ' events — A/V by Colin' : '';
+  }
+
+  // A/V trash buttons — hide rows
+  document.querySelectorAll('#av .av-trash').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const row = btn.closest('tr');
+      row.classList.add('av-hidden');
+      setTimeout(() => row.style.display = 'none', 300);
+    });
+  });
+
+  // Lightbox
+  function openLightbox(card) {
+    const img = card.querySelector('img');
+    document.getElementById('lightbox-img').src = img.src;
+    document.getElementById('lightbox').classList.add('active');
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  // Scroll-triggered fade-in animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Active nav link on scroll
+  const sections = document.querySelectorAll('section');
+  const navLinks = document.querySelectorAll('nav a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop - 80;
+      if (window.scrollY >= sectionTop) {
+        current = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
